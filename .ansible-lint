@@ -1,0 +1,8 @@
+exclude_paths:
+  - .github/
+  - .travis.yml
+  - molecule/
+  - tests/
+  - README.md
+  - requirements.yml
+  - .venv/

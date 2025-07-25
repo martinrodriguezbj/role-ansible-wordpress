@@ -1,0 +1,22 @@
+---
+galaxy_info:
+  author: martinrodriguez
+  role_name: wordpress
+  description: Rol para instalar y configurar WordPress
+  company: noexiste
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+    - name: Debian
+      versions:
+        - buster
+        - bookworm
+  galaxy_tags:
+    - wordpress
+    - cms
+    - web
+dependencies: []

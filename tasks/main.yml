@@ -1,0 +1,120 @@
+- name: Habilitar repositorio universe (solo Ubuntu)
+  ansible.builtin.apt_repository:
+    repo: "deb http://archive.ubuntu.com/ubuntu {{ ansible_distribution_release }} universe"
+    state: present
+  when: ansible_distribution == "Ubuntu"
+
+- name: Actualizar caché de paquetes
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+  when: ansible_os_family == "Debian"
+
+- name: Instalar paquetes requeridos
+  ansible.builtin.package:
+    name:
+      - apache2
+      - php
+      - php-mysql
+      - php-curl
+      - php-gd
+      - php-mbstring
+      - php-xml
+      - php-xmlrpc
+      - php-soap
+      - php-intl
+      - php-zip
+      - unzip
+      - wget
+    state: present
+  when: ansible_os_family != "RedHat"
+
+- name: Instalar paquetes requeridos (RedHat)
+  ansible.builtin.dnf:
+    name:
+      - httpd
+      - php
+      - php-mysqlnd
+      - php-curl
+      - php-gd
+      - php-mbstring
+      - php-xml
+      - php-soap
+      - php-intl
+      - php-zip
+      - unzip
+      - wget
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Crear directorio padre para WordPress
+  ansible.builtin.file:
+    path: /var/www/html
+    state: directory
+    mode: '0755'
+
+- name: Crear directorio de instalación
+  ansible.builtin.file:
+    path: "{{ wordpress_install_dir }}"
+    state: directory
+    owner: "{{ wordpress_web_user }}"
+    group: "{{ wordpress_web_user }}"
+    mode: '0755'
+
+- name: Descargar WordPress
+  ansible.builtin.get_url:
+    url: "{{ wordpress_archive_url }}"
+    dest: /tmp/wordpress.tar.gz
+    mode: '0644'
+
+- name: Extraer WordPress
+  ansible.builtin.unarchive:
+    src: /tmp/wordpress.tar.gz
+    dest: "{{ wordpress_install_dir }}"
+    remote_src: true
+    extra_opts: [--strip-components=1]
+    creates: "{{ wordpress_install_dir }}/index.php"
+
+- name: Copiar wp-config.php desde plantilla
+  ansible.builtin.template:
+    src: wp-config.php.j2
+    dest: "{{ wordpress_install_dir }}/wp-config.php"
+    owner: "{{ wordpress_web_user }}"
+    group: "{{ wordpress_web_user }}"
+    mode: '0644'
+
+# Reinicio sólo si NO es contenedor
+- name: Reiniciar servicio web (Debian/Ubuntu con systemd fuera de Docker)
+  ansible.builtin.service:
+    name: apache2
+    state: restarted
+  when:
+    - ansible_os_family != "RedHat"
+    - ansible_virtualization_type not in ["docker", "container"]  # detecta contenedores aunque containerized falle
+
+- name: Reiniciar servicio web (RedHat con systemd fuera de Docker)
+  ansible.builtin.service:
+    name: httpd
+    state: restarted
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_virtualization_type not in ["docker", "container"]
+
+# Iniciar en contenedor (foreground)
+- name: Iniciar Apache en contenedor Docker (Debian/Ubuntu)
+  ansible.builtin.command: apache2ctl -D FOREGROUND
+  async: 30
+  poll: 0
+  changed_when: false
+  when:
+    - ansible_os_family != "RedHat"
+    - ansible_virtualization_type in ["docker", "container"]
+
+- name: Iniciar Apache en contenedor Docker (RedHat)
+  ansible.builtin.shell: "nohup httpd -DFOREGROUND >/dev/null 2>&1 &"
+  async: 0
+  poll: 0
+  changed_when: false
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_virtualization_type in ["docker", "container"]

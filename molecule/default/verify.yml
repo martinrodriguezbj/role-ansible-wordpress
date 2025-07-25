@@ -1,0 +1,68 @@
+---
+- name: Verificar role de instalación de WordPress
+  hosts: all
+  become: yes
+  gather_facts: true
+  vars:
+    wordpress_install_dir: /var/www/html/wordpress
+    wordpress_web_user: www-data
+
+  tasks:
+    # Verificar directorio de WordPress
+    - name: Verificar que el directorio de WordPress existe
+      stat:
+        path: "{{ wordpress_install_dir }}"
+      register: wp_dir
+
+    - name: Asegurar que el directorio de WordPress fue creado
+      assert:
+        that:
+          - wp_dir.stat.exists
+          - wp_dir.stat.isdir
+        fail_msg: "El directorio de WordPress no se creó en {{ wordpress_install_dir }}"
+
+    # Verificar archivo index.php
+    - name: Verificar que el archivo index.php existe
+      stat:
+        path: "{{ wordpress_install_dir }}/index.php"
+      register: index_php
+
+    - name: Asegurar que index.php fue desplegado
+      assert:
+        that:
+          - index_php.stat.exists
+        fail_msg: "El archivo index.php no se encuentra en {{ wordpress_install_dir }}"
+
+    # Verificar archivo wp-config.php
+    - name: Verificar que wp-config.php existe
+      stat:
+        path: "{{ wordpress_install_dir }}/wp-config.php"
+      register: wp_config
+
+    - name: Asegurar que wp-config.php fue creado desde plantilla
+      assert:
+        that:
+          - wp_config.stat.exists
+          - wp_config.stat.mode == "0644"
+        fail_msg: "wp-config.php no existe o no tiene permisos 0644"
+
+    # Verificar servicio web (diferente para systemd vs docker)
+    - name: Obtener estado de servicios
+      service_facts:
+
+    - name: Verificar que apache2 o httpd esté activo (systemd)
+      assert:
+        that:
+          - >
+            ('apache2.service' in ansible_facts.services and ansible_facts.services['apache2.service'].state == 'running')
+            or
+            ('httpd.service' in ansible_facts.services and ansible_facts.services['httpd.service'].state == 'running')
+        fail_msg: "Ningún servicio web (apache2 o httpd) está corriendo bajo systemd"
+      when: ansible_virtualization_type not in ["docker", "container"]
+
+    - name: Verificar que apache2 o httpd está corriendo (Docker/Container)
+      shell: pgrep apache2 || pgrep httpd
+      register: web_process
+      changed_when: false
+      failed_when: web_process.rc != 0
+      when: ansible_virtualization_type in ["docker", "container"]

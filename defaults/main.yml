@@ -1,0 +1,18 @@
+---
+# Variables para parametrizar la instalación de WordPress
+
+wordpress_db_name: wordpress
+wordpress_db_user: wp_user
+wordpress_db_password: wp_pass
+wordpress_db_host: localhost
+
+wordpress_site_url: http://localhost
+wordpress_site_title: Mi Sitio WordPress
+wordpress_admin_user: admin
+wordpress_admin_password: admin123
+wordpress_admin_email: admin@example.com
+
+wordpress_install_dir: /var/www/html/wordpress
+wordpress_archive_url: https://wordpress.org/latest.tar.gz
+
+wordpress_web_user: "{{ (ansible_facts['os_family'] == 'RedHat') | ternary('apache', 'www-data') }}"

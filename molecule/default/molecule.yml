@@ -1,0 +1,29 @@
+---
+driver:
+  name: docker
+
+platforms:
+  - name: ubuntu
+    image: geerlingguy/docker-ubuntu2004-ansible:latest
+    privileged: true
+    command: "/lib/systemd/systemd"
+    pre_build_image: true
+
+  - name: debian
+    image: geerlingguy/docker-debian11-ansible:latest
+    privileged: true
+    command: "/lib/systemd/systemd"
+    pre_build_image: true
+
+  - name: rocky
+    image: geerlingguy/docker-rockylinux9-ansible
+    privileged: true
+    pre_build_image: true
+
+provisioner:
+  name: ansible
+  playbooks:
+    converge: converge.yml
+
+verifier:
+  name: ansible

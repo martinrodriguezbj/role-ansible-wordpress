@@ -1,0 +1,5 @@
+roles:
+  - src: geerlingguy.mysql
+    version: 5.0.2
+collections:
+  - name: community.mysql

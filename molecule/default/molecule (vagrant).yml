@@ -1,0 +1,48 @@
+---
+driver:
+  name: vagrant
+
+platforms:
+  - name: web-ubuntu
+    box: ubuntu/focal64
+    interfaces:
+      - network_name: forwarded_port
+        guest: 80      # Puerto interno donde corre Apache
+        host: 8881     # Puerto local para acceder desde el host
+    provider_options:
+      memory: 1024
+
+  - name: web-debian
+    box: debian/bookworm64
+    interfaces:
+      - network_name: forwarded_port
+        guest: 80
+        host: 8882
+    provider_options:
+      memory: 1024
+
+  - name: web-rocky
+    box: rockylinux/9
+    interfaces:
+      - network_name: forwarded_port
+        guest: 80
+        host: 8883
+    provider_options:
+      memory: 1024
+
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      web-ubuntu:
+        apache_http_port: 80
+        apache_server_name: "web-ubuntu.localhost"
+      web-debian:
+        apache_http_port: 80
+        apache_server_name: "web-debian.localhost"
+      web-rocky:
+        apache_http_port: 80
+        apache_server_name: "web-rocky.localhost"
+
+verifier:
+  name: ansible
