@@ -16,7 +16,7 @@ platforms:
     pre_build_image: true
 
   - name: rocky
-    image: image: geerlingguy/docker-rockylinux9-ansible:latest
+    image: geerlingguy/docker-rockylinux9-ansible:latest
     privileged: true
     pre_build_image: true
 
