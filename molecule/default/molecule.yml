@@ -16,7 +16,7 @@ platforms:
     pre_build_image: true
 
   - name: rocky
-    image: geerlingguy/docker-rockylinux9-ansible
+    image: geerlingguy/docker-rockylinux9-ansible:latest
     privileged: true
     command: "/usr/sbin/init"
     pre_build_image: true
