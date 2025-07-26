@@ -17,10 +17,20 @@ platforms:
 
   - name: rocky
     image: geerlingguy/docker-rockylinux9-ansible
-    privileged: true
+    privileged: false                   # NO privileged, porque no funciona en GH Actions hosted
     pre_build_image: true
-   # override_command: false
-    ansible_user: root
+    override_command: true             # Sobrescribimos el CMD para evitar systemd
+    command: /bin/bash -c "while true; do sleep 1000; done"  # Mantener contenedor vivo sin systemd
+    ansible_user: root                 # Ansible se conecta como root, no necesita sudo
 
+#  - name: rocky
+#    image: geerlingguy/docker-rockylinux9-ansible
+#    privileged: true
+#    pre_build_image: true
+   # override_command: false
+#    ansible_user: root
+
+provisioner:
+  name: ansible
 verifier:
   name: ansible
