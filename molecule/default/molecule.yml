@@ -16,11 +16,10 @@ platforms:
     pre_build_image: true
 
   - name: rocky
-    image: geerlingguy/docker-rockylinux9-ansible:latest
+    image: geerlingguy/docker-rockylinux9-ansible
     privileged: true
-    command: "/usr/sbin/init"
     pre_build_image: true
-    override_command: false
+   # override_command: false
     ansible_user: root
 
 verifier:
