@@ -32,6 +32,7 @@ jobs:
 
       - name: Run Molecule tests step by step
         run: |
+          export ANSIBLE_CONFIG=$GITHUB_WORKSPACE/ansible.cfg
           molecule create
           molecule converge
           molecule verify
