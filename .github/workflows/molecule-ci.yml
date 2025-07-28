@@ -36,3 +36,10 @@ jobs:
           molecule converge
           molecule verify
           molecule destroy
+
+      - name: Publish role to Ansible Galaxy
+        if: success()  # Solo publica si los tests pasan
+        env:
+          ANSIBLE_GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
+        run: |
+          ansible-galaxy role import martinrodriguezbj ansible-role-wordpress --token $ANSIBLE_GALAXY_API_KEY
