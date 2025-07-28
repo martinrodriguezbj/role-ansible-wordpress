@@ -42,4 +42,4 @@ jobs:
         env:
           ANSIBLE_GALAXY_API_KEY: ${{ secrets.GALAXY_API_KEY }}
         run: |
-          ansible-galaxy role import martinrodriguezbj ansible-role-wordpress --token $ANSIBLE_GALAXY_API_KEY
+          ansible-galaxy role import martinrodriguezbj ansible-role-wordpress --token $GALAXY_API_KEY
