@@ -1,38 +1,102 @@
-Role Name
-=========
+# ansible-role-wordpress
 
-A brief description of the role goes here.
+[![Molecule Test](https://github.com/martinrodriguezbj/ansible-role-wordpress/actions/workflows/molecule-ci.yml/badge.svg)](https://github.com/martinrodriguezbj/ansible-role-wordpress/actions)
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-martinrodriguezbj.wordpress-blue.svg)](https://galaxy.ansible.com/martinrodriguezbj/wordpress)
 
-Requirements
-------------
+Este role de Ansible instala y configura **WordPress** en servidores basados en Debian/Ubuntu o RedHat.  
+Incluye instalación de dependencias PHP y Apache/Httpd, descarga del paquete WordPress y configuración automática del archivo `wp-config.php`.
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+---
 
-Role Variables
---------------
+## Requisitos
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+- Ansible >= 2.12
+- Acceso SSH con privilegios `sudo`
+- Servidor soportado: Debian 11, Ubuntu 22.04, Rocky Linux 9 (o compatibles)
+- Base de datos MySQL/MariaDB ya configurada y accesible
 
-Dependencies
-------------
+---
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+## Variables
 
-Example Playbook
-----------------
+Las variables configurables están en `defaults/main.yml` y se pueden sobreescribir en tu playbook o `group_vars`.
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+### Variables principales
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+| Variable                    | Descripción                                       | Valor por defecto              |
+|-----------------------------|---------------------------------------------------|--------------------------------|
+| `wordpress_db_name`         | Nombre de la base de datos                        | `wordpress`                    |
+| `wordpress_db_user`         | Usuario de la base de datos                       | `wp_user`                      |
+| `wordpress_db_password`     | Contraseña del usuario de base de datos           | `wp_pass`                      |
+| `wordpress_db_host`         | Host de la base de datos                          | `localhost`                    |
+| `wordpress_site_url`        | URL del sitio WordPress                           | `http://localhost`             |
+| `wordpress_site_title`      | Título del sitio WordPress                        | `Mi Sitio WordPress`           |
+| `wordpress_admin_user`      | Usuario administrador del sitio                   | `admin`                        |
+| `wordpress_admin_password`  | Contraseña del usuario administrador              | `admin123`                      |
+| `wordpress_admin_email`     | Email del administrador                           | `admin@example.com`            |
+| `wordpress_install_dir`     | Ruta de instalación de WordPress                  | `/var/www/html/wordpress`      |
+| `wordpress_archive_url`     | URL para descargar la última versión de WordPress | `https://wordpress.org/latest.tar.gz` |
+| `wordpress_web_user`        | Usuario del servidor web (apache/httpd)           | Detectado según el SO          |
 
-License
--------
+### Claves de seguridad (`wp-config.php`)
 
-BSD
+Estas claves son utilizadas para mejorar la seguridad de las cookies y sesiones de WordPress.  
+Defínelas en `defaults/main.yml` o sobreescríbelas en producción:
 
-Author Information
-------------------
+- `auth_key`
+- `secure_auth_key`
+- `logged_in_key`
+- `nonce_key`
+- `auth_salt`
+- `secure_auth_salt`
+- `logged_in_salt`
+- `nonce_salt`
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+> **Recomendación:** Para entornos productivos, genera claves únicas y protégelas con `ansible-vault`.
+
+---
+
+## Ejemplo de uso
+
+Ejemplo de playbook mínimo para usar este role:
+
+```yaml
+- hosts: wordpress
+  become: true
+  roles:
+    - role: martinrodriguezbj.wordpress
+      vars:
+        wordpress_db_name: mysite
+        wordpress_db_user: myuser
+        wordpress_db_password: supersecret
+        wordpress_site_title: "Blog Personal"
+        wordpress_admin_password: "contraseñaSegura!"
+```
+# Test con Molecule
+
+Este role incluye escenario de pruebas con Molecule. Para ejecutarlo:
+
+```
+Instalar dependencias
+pip install molecule[docker] ansible-lint
+
+Ejecutar pruebas completas
+molecule test
+
+O correr solo converge para verificar la instalación
+molecule converge
+```
+
+Compatibilidad
+Probado en:
+
+Debian 11 (Bullseye)
+Ubuntu 22.04 (Jammy)
+Rocky Linux 9
+
+Licencia
+MIT
+
+Autor
+Role desarrollado por Martin Rodriguez
+Disponible en [Ansible Galaxy](https://galaxy.ansible.com/martinrodriguezbj/wordpress)

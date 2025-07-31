@@ -32,10 +32,7 @@ jobs:
 
       - name: Run Molecule tests step by step
         run: |
-          molecule create
-          molecule converge
-          molecule verify
-          molecule destroy
+          molecule test
 
       - name: Publish role to Ansible Galaxy
         if: success()  # Solo publica si los tests pasan
