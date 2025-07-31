@@ -7,12 +7,14 @@ define('DB_HOST', '{{ wordpress_db_host }}');
 define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
 
-{% for key in [
-  'AUTH_KEY', 'SECURE_AUTH_KEY', 'LOGGED_IN_KEY', 'NONCE_KEY',
-  'AUTH_SALT', 'SECURE_AUTH_SALT', 'LOGGED_IN_SALT', 'NONCE_SALT'
-] %}
-define('{{ key }}', '{{ lookup("password", "/dev/null length=64 chars=ascii_letters") }}');
-{% endfor %}
+define('AUTH_KEY', '{{ auth_key }}');
+define('SECURE_AUTH_KEY', '{{ secure_auth_key }}');
+define('LOGGED_IN_KEY', '{{ logged_in_key }}');
+define('NONCE_KEY', '{{ nonce_key }}');
+define('AUTH_SALT', '{{ auth_salt }}');
+define('SECURE_AUTH_SALT', '{{ secure_auth_salt }}');
+define('LOGGED_IN_SALT', '{{ logged_in_salt }}');
+define('NONCE_SALT', '{{ nonce_salt }}');
 
 $table_prefix = 'wp_';
 

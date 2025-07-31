@@ -16,3 +16,13 @@ wordpress_install_dir: /var/www/html/wordpress
 wordpress_archive_url: https://wordpress.org/latest.tar.gz
 
 wordpress_web_user: "{{ (ansible_facts['os_family'] == 'RedHat') | ternary('apache', 'www-data') }}"
+
+# Variables template
+auth_key: "ZyW8K3mP4vC7Q1xR9bF2nS0uH5jT6kL8"
+secure_auth_key: "P2sQ4tV9yG7lK3mB1hN8fR0cX6wD5jA2"
+logged_in_key: "N1hT3kJ9vB2rQ8pW5zM7gC4xL0fD6sV8"
+nonce_key: "C5tR1pW8jM2kB9nH6vL3gX4qY0dS7zA5"
+auth_salt: "L3xH7fQ1mV8bT2cP9kG4sR5yJ0wD6nZ3"
+secure_auth_salt: "W1qC9vP3bT6kM2hN8rF4yG7jX0sL5dA2"
+logged_in_salt: "D8hL3tN1vQ5mK9xP2cG7yF4wJ0rS6bA5"
+nonce_salt: "M2gH7pQ9cV4nB1xT8kF3rS6jW0dL5yA2"
